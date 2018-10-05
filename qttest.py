@@ -3,64 +3,75 @@ from PyQt5.QtWidgets import QInputDialog
 import sys
 import json
 import os
-import IPv4calc
+from IPv4calc import IPv4Calc
 import string
+import datetime
 
 
 class CreateWindow(QWidget):
+    try:
+        os.remove("test.json")
+    except:
+        pass
     IPv4Header = []
-    LogicData = IPv4calc.IPv4Calc().IPv4Header
-    IPv4calcTest = IPv4calc
-    datalist = IPv4calc.IPv4Calc().datalist
+    LogicData = IPv4Calc().IPv4Header
+    datalist = IPv4Calc().datalist
     counter = 0
     alphabet = string.ascii_letters
     check = 0
+    IPv4CalcInst = IPv4Calc()
+
 
     def __init__(self):
         super().__init__()
         self.initUI()
-
-
-    def initUI(self):
-        print(CreateWindow.counter)
-        try:
-            os.remove('test.json')
-        except:
-            pass
         self.getChoice()
         self.showDialog(string=self.counter)
-        IPv4calc.IPv4Calc().__init__()
-        if self.counter == 12:
-            self.finalResult()
+        self.finalResult()
 
-
-    def showDialog(self, string):
-        self.check = 0
-        self.text, self.ok = QInputDialog.getText(self, 'Input Dialog', 'Enter ' + self.datalist[int(string)] + ':')
-
-        if self.inputCheck(text=self.text) == True:
-            if CreateWindow.counter < 12:
-                CreateWindow.counter += 1
-        else:
-            QMessageBox.about(self, "Error", "Only integers and dots allowed!")
-
-        self.okButtonClick()
-        if not self.ok:
-            exit()
+    def initUI(self):
+        pass
 
     def getChoice(self):
         items = ("bindec","decbin")
-        item, okPressed = QInputDialog.getItem(self, "Get item", "Mode:", items, 0 , False)
+        self.item, okPressed = QInputDialog.getItem(self, "Get item", "Mode:", items, 0 , False)
         if not okPressed:
             exit()
-        if okPressed and item:
-            self.IPv4calcTest.IPv4Calc.calctype = item
+        if okPressed and self.item:
+            self.IPv4CalcInst.calctype = self.item
+
+    def showDialog(self, string):
+        self.check = 0
+        if CreateWindow.counter < 12:
+            self.text, self.ok = QInputDialog.getText(self, 'Input Dialog', 'Enter ' + self.datalist[int(string)] + ':')
+            if not self.ok:
+                exit()
+            if self.inputCheck(text=self.text) == True:
+                CreateWindow.counter += 1
+            else:
+                QMessageBox.about(self, "Error", "Invalid Input!")
+            self.okButtonClick()
+        else:
+            with open('test.json', 'a+') as outfile:
+                json.dump(self.IPv4Header, outfile)
+                outfile.close()
+            self.IPv4CalcInst.CallPrompt()
+
+
+
 
     def inputCheck(self, text):
-        for letter in self.alphabet:
-            for listitem in text:
-                if letter in listitem:
+        if text is "":
+            self.check = 1
+
+        for listitem in text:
+            if self.item == "decbin":
+                if listitem not in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."]:  #Quick&Dirty des Todes
                     self.check = 1
+            elif self.item == "bindec":
+                if listitem not in ["0","1","."]:
+                    self.check = 1
+
         if self.check == 1:
             return False
         else:
@@ -70,29 +81,36 @@ class CreateWindow(QWidget):
     def okButtonClick(self):
         if self.ok:
             if self.check == 0:
-                with open('test.json', 'a+') as infile:
-                    if os.stat('test.json').st_size != 0:
-                        data = json.load(infile)
-                        self.IPv4Header = data
-                    infile.close()
-                if self.text is not "":
-                    self.IPv4Header.append(self.text)
+                self.IPv4Header.append(self.text)
                 print(self.IPv4Header)
+                try:
+                    with open('test.json', 'r') as infile:
+                        if os.stat('test.json').st_size != 0:
+                            data = json.load(infile)
+                            self.IPv4Header = data
+                        infile.close()
+                except:
+                    pass
             self.showDialog(CreateWindow.counter)
 
-
-        if self.x:
-            with open('test.json', 'a+') as outfile:
-                json.dump(self.IPv4Header, outfile)
-                outfile.close()
-
-            with open('test2.json', 'w') as outfile:
-                json.dump(self.IPv4Header, outfile)
-                outfile.close()
+    def getTime(self):
+        timenow = datetime.datetime.now()
+        splittime = str(timenow).replace(":", "_").replace("-", "").replace(".", "").replace(" ", "_")
+        self.filetime = splittime.replace(' ', '')[:-6]
+        return self.filetime
 
     def finalResult(self):
         print("Data by type:",self.LogicData)
         print("Plain data:", "-".join(self.LogicData.values()))
+        print("Saving results to file")
+        filename = 'results'+self.getTime()+'.txt'
+        with open(filename, 'w') as output:
+            output.write("Your input:"+str(self.IPv4Header))
+            for x in range(12):
+                output.write("\n"+list(self.LogicData.keys())[x]+":"+list(self.LogicData.values())[x])
+        os.remove('test.json')
+
+
 
 
 if __name__ == '__main__':

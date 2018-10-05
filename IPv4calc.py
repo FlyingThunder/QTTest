@@ -1,26 +1,24 @@
 import json
+import os
+
 
 class IPv4Calc:
     IPv4Header = {}
     calctype = ""
     datalist = ["Version", "IHL", "TOS", "Length", "Identification", "Flag", "Offset", "TTL", "Protocol",
-                     "Checksum", "Source", "Destination"]
+                "Checksum", "Source", "Destination"]
 
-    def __init__(self):
-        self.CallPrompt(type=type)
-
-
-    def CallPrompt(self, type):
-
-
+    def CallPrompt(self):
         calctype = self.calctype
-        with open('test2.json','r') as infile:
-            jsonimport = json.load(infile)
-            for datatype, inputdata in zip(self.datalist, jsonimport):
-                self.InputPrompt(type=calctype, data=datatype, inputtest=inputdata)
+        try:
+            with open('test.json','r') as infile:
+                if os.stat('test.json').st_size != 0:
+                    jsonimport = json.load(infile)
+                    for datatype, inputdata in zip(self.datalist, jsonimport):
+                        self.InputPrompt(type=calctype, data=datatype, inputdata=inputdata)
 
-
-
+        except:
+            print("test")
 
     def IPConvert(self, input, data, type):
         item2 = []
@@ -34,8 +32,8 @@ class IPv4Calc:
                 item2[0][i] = str(int(str(item2[0][i]), 2))
         self.IPv4Header[data] = str(item2[0][0] + "." + item2[0][1] + "." + item2[0][2] + "." + item2[0][3])
 
-    def InputPrompt(self, type, data, inputtest):
-        inputdata = inputtest
+
+    def InputPrompt(self, type, data, inputdata):
         if data in ["Source", "Destination"]:
             if "." in inputdata and inputdata.count(".")==3:
                 if type == "decbin":
@@ -54,7 +52,7 @@ class IPv4Calc:
             except:
                 pass
 
-
-
 if __name__ == "__main__":
     IPv4Calc()
+
+
