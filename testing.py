@@ -1,10 +1,12 @@
-import string
+example = "0.111.256.100"
 
-testlist = list(string.ascii_letters)
 
-inputtest = ["123","a21","asva"]
+def ipChecker(ip):
+    iplist = ip.split(".")
 
-for item in testlist:
-    for listitem in inputtest:
-        if item in listitem:
-            print(item,listitem)
+    for part in iplist:
+        if part != ".":
+            if int(part) not in range(255):
+                print("test")
+
+ipChecker(example)
