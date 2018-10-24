@@ -43,7 +43,7 @@ class CreateWindow(QWidget):
 
     def showDialog(self, string):
         self.check = 0
-        if CreateWindow.counter < 12:
+        if CreateWindow.counter < len(self.datalist):
             self.text, self.ok = QInputDialog.getText(self, 'Input Dialog', 'Enter ' + self.datalist[int(string)] + ':')
             if not self.ok:
                 exit()
@@ -115,13 +115,51 @@ class CreateWindow(QWidget):
         self.filetime = splittime.replace(' ', '')[:-6]
         return self.filetime
 
+    def calcChecksum(self, intlistinput):
+        self.templist = []
+        for item in intlistinput:
+            self.templist.append(int(item.replace(".",""), 2))  #Nimmt binären input, packt als dec in liste, wandelt summe von Liste in bin um
+        self.sumtemplist = bin(sum(self.templist))
+        if self.item == "bindec":
+            self.convchecksum = int(str(self.sumtemplist), 2)
+        elif self.item == "decbin":
+            self.convchecksum = bin(int(self.sumtemplist))
+
+        self.gatherOutput()
+
+        if self.item == "bindec":
+            self.convDictSum= int(str(self.sumtemplist), 2)
+        elif self.item == "decbin":
+            self.convDictSum = bin(int(self.sumtemplist))
+
+
+    def gatherOutput(self):
+        valList = []
+
+        for v in self.LogicData.values():           #Nimmt dezimalen input und wandelt summe in bin um
+            valList.append(bin(int(v.replace(".",""))))
+
+        self.DictSum = bin(sum(valList))        #TODO: Fix
+
+
+
     def finalResult(self):
+        print(self.LogicData.values())
         QMessageBox.about(self, "Saving...", "Saving data to file in Script folder")
+
+        self.calcChecksum(self.IPv4Header)
+
         filename = 'results'+self.getTime()+'.txt'
         with open(filename, 'w') as output:
             output.write("Your input:"+str(self.IPv4Header))
-            for x in range(12):
+            for x in range(len(self.datalist)):
                 output.write("\n"+list(self.LogicData.keys())[x]+":"+list(self.LogicData.values())[x])
+            output.write("\nChecksum of the input:"+str(self.sumtemplist))
+            output.write("\nConverted Checksum of the input:"+str(self.convchecksum))
+            output.write("\nChecksum of the output:"+str(self.DictSum))
+            output.write("\nConverted Checksum of the output:"+str(self.convDictSum))
+            output.close()
+
         os.remove('test.json')
 
 

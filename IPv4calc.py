@@ -6,7 +6,7 @@ class IPv4Calc:
     IPv4Header = {}
     calctype = ""
     datalist = ["Version", "IHL", "TOS", "Length", "Identification", "Flag", "Offset", "TTL", "Protocol",
-                "Checksum", "Source", "Destination"]
+                "Source", "Destination"]
 
     def CallPrompt(self):
         calctype = self.calctype
