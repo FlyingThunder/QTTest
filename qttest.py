@@ -7,7 +7,6 @@ from IPv4calc import IPv4Calc
 import string
 import datetime
 
-#TODO: Checksum
 
 class CreateWindow(QWidget):
     try:
@@ -125,7 +124,7 @@ class CreateWindow(QWidget):
         elif self.item == "decbin":
             self.convchecksum = bin(int(self.sumtemplist))
 
-        self.gatherOutput()
+        self.DictSum = self.gatherOutput()
 
         if self.item == "bindec":
             self.convDictSum= int(str(self.sumtemplist), 2)
@@ -139,7 +138,7 @@ class CreateWindow(QWidget):
         for v in self.LogicData.values():           #Nimmt dezimalen input und wandelt summe in bin um
             valList.append(bin(int(v.replace(".",""))))
 
-        self.DictSum = bin(sum(valList))        #TODO: Fix
+        #1return bin(sum(valList))        #TODO: Fix
 
 
 
@@ -161,6 +160,7 @@ class CreateWindow(QWidget):
             output.close()
 
         os.remove('test.json')
+        exit()
 
 
 
