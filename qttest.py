@@ -114,49 +114,44 @@ class CreateWindow(QWidget):
         self.filetime = splittime.replace(' ', '')[:-6]
         return self.filetime
 
-    def calcChecksum(self, intlistinput):
-        self.templist = []
-        for item in intlistinput:
-            self.templist.append(int(item.replace(".",""), 2))  #Nimmt binären input, packt als dec in liste, wandelt summe von Liste in bin um
-        self.sumtemplist = bin(sum(self.templist))
-        if self.item == "bindec":
-            self.convchecksum = int(str(self.sumtemplist), 2)
-        elif self.item == "decbin":
-            self.convchecksum = bin(int(self.sumtemplist))
-
-        self.DictSum = self.gatherOutput()
+    def calcChecksum(self): #IPv4Header = InputList, LogicData = OutputDict
+        self.templistin = []
+        self.templistout = []
 
         if self.item == "bindec":
-            self.convDictSum= int(str(self.sumtemplist), 2)
-        elif self.item == "decbin":
-            self.convDictSum = bin(int(self.sumtemplist))
+            for item in self.IPv4Header:            #jedes header feld des inputs:
+                if "." in item:                     #wenn IP addresse:
+                    x = []
+                    x.append(item.split("."))
+                    for ipitem in x[0]:
+                        self.templistin.append(int(str(ipitem), 2)) #jedes oktet als dezimalwert in die liste einfügen
+                else:
+                    self.templistin.append(int(str(item), 2)) #jedes andere feld als dezimalwert in liste einfügen
 
+            for item in self.LogicData.values():    #jedes header feld des outputs:
+                if "." in item:                     #wenn IP addresse:
+                    y = []
+                    y.append(item.split("."))
+                    for ipitem in y[0]:
+                        self.templistout.append(int(ipitem))    #jedes oktet als listenitem in temporäre liste einfügen:
+                else:
+                    self.templistout.append(int(item))               #jedes andere feld in liste einfügen
 
-    def gatherOutput(self):
-        valList = []
-
-        for v in self.LogicData.values():           #Nimmt dezimalen input und wandelt summe in bin um
-            valList.append(bin(int(v.replace(".",""))))
-
-        #1return bin(sum(valList))        #TODO: Fix
-
-
+            self.inputchecksum = sum(self.templistin) #liste summieren
+            self.outputchecksum = sum(self.templistout) #liste summieren
 
     def finalResult(self):
-        print(self.LogicData.values())
         QMessageBox.about(self, "Saving...", "Saving data to file in Script folder")
 
-        self.calcChecksum(self.IPv4Header)
+        self.calcChecksum()
 
         filename = 'results'+self.getTime()+'.txt'
         with open(filename, 'w') as output:
             output.write("Your input:"+str(self.IPv4Header))
             for x in range(len(self.datalist)):
                 output.write("\n"+list(self.LogicData.keys())[x]+":"+list(self.LogicData.values())[x])
-            output.write("\nChecksum of the input:"+str(self.sumtemplist))
-            output.write("\nConverted Checksum of the input:"+str(self.convchecksum))
-            output.write("\nChecksum of the output:"+str(self.DictSum))
-            output.write("\nConverted Checksum of the output:"+str(self.convDictSum))
+            output.write("\nChecksum of the input:"+str(self.inputchecksum))
+            output.write("\nChecksum of the output:"+str(self.outputchecksum))
             output.close()
 
         os.remove('test.json')
