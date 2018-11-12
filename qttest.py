@@ -4,6 +4,7 @@ import sys
 import json
 import os
 from IPv4calc import IPv4Calc
+from chksum import chksum
 import string
 import datetime
 
@@ -20,6 +21,7 @@ class CreateWindow(QWidget):
     alphabet = string.ascii_letters
     check = 0
     IPv4CalcInst = IPv4Calc()
+    chksumInst = chksum()
 
 
     def __init__(self):
@@ -114,36 +116,12 @@ class CreateWindow(QWidget):
         self.filetime = splittime.replace(' ', '')[:-6]
         return self.filetime
 
-    def calcChecksum(self): #IPv4Header = InputList, LogicData = OutputDict
-        self.templistin = []
-        self.templistout = []
-
-        if self.item == "bindec":
-            for item in self.IPv4Header:            #jedes header feld des inputs:
-                if "." in item:                     #wenn IP addresse:
-                    x = []
-                    x.append(item.split("."))
-                    for ipitem in x[0]:
-                        self.templistin.append(int(str(ipitem), 2)) #jedes oktet als dezimalwert in die liste einfügen
-                else:
-                    self.templistin.append(int(str(item), 2)) #jedes andere feld als dezimalwert in liste einfügen
-
-            for item in self.LogicData.values():    #jedes header feld des outputs:
-                if "." in item:                     #wenn IP addresse:
-                    y = []
-                    y.append(item.split("."))
-                    for ipitem in y[0]:
-                        self.templistout.append(int(ipitem))    #jedes oktet als listenitem in temporäre liste einfügen:
-                else:
-                    self.templistout.append(int(item))               #jedes andere feld in liste einfügen
-
-            self.inputchecksum = sum(self.templistin) #liste summieren
-            self.outputchecksum = sum(self.templistout) #liste summieren
-
     def finalResult(self):
         QMessageBox.about(self, "Saving...", "Saving data to file in Script folder")
 
-        self.calcChecksum()
+        self.chksumInst.outChecksum(mode = self.item, inputdata = self.IPv4Header, outputdata = self.LogicData.values())
+        self.inputchecksum = self.chksumInst.inputchecksum
+        self.outputchecksum = self.chksumInst.outputchecksum
 
         filename = 'results'+self.getTime()+'.txt'
         with open(filename, 'w') as output:
