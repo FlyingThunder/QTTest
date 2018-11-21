@@ -18,7 +18,7 @@ class IPv4Calc:
                         self.InputPrompt(type=calctype, data=datatype, inputdata=inputdata)
 
         except:
-            print("test")
+            pass
 
     def IPConvert(self, input, data, type):
         item2 = []

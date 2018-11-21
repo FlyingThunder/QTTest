@@ -61,10 +61,8 @@ class CreateWindow(QWidget):
 
     def okButtonClick(self):
         if self.ok:
-            print(self.strchkInst.check)
             if self.strchkInst.check == 0:
                 self.IPv4Header.append(self.text)
-                print(self.IPv4Header)
                 try:
                     with open('test.json', 'r') as infile:
                         if os.stat('test.json').st_size != 0:

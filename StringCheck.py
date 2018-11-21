@@ -17,8 +17,11 @@ class StringCheck:
         for item in textlist:
             textlist2.append(bin(int(item)).lstrip("0b"))
         if self.item == "decbin":
-            if int(self.text) not in textlist:
-                self.check = 1
+            try:
+                if int(self.text) not in textlist:
+                    self.check = 1
+            except:
+                pass
         elif self.item == "bindec":
             if self.text not in textlist2:
                 self.check = 1
@@ -29,10 +32,14 @@ class StringCheck:
         self.text = text
         self.item = item
 
+        if text is "":
+            self.check = 1
+
         for listitem in text:       #cant use textCheck because of full stop character
             if self.item == "decbin":
-                if listitem not in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."]:
-                    self.check = 1
+                if type not in ["Source","Destination"]:
+                    if listitem not in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]:
+                        self.check = 1
             elif self.item == "bindec":
                 if listitem not in ["0","1","."]:
                     self.check = 1
@@ -72,14 +79,6 @@ class StringCheck:
 
         elif type == "Protocol":
             self.textCheck(list(range(1,9)))
-
-        if text is "":
-            self.check = 1
-
-
-
-        print(self.check)
-
 
         if self.check == 1:
             return False
