@@ -5,6 +5,7 @@ import json
 import os
 from calculating import IPv4Calc
 from chksum import chksum
+from StringCheck import StringCheck
 import string
 import datetime
 
@@ -19,9 +20,9 @@ class CreateWindow(QWidget):
     datalist = IPv4Calc().datalist
     counter = 0
     alphabet = string.ascii_letters
-    check = 0
     IPv4CalcInst = IPv4Calc()
     chksumInst = chksum()
+    strchkInst = StringCheck()
 
 
     def __init__(self):
@@ -43,12 +44,11 @@ class CreateWindow(QWidget):
             self.IPv4CalcInst.calctype = self.item
 
     def showDialog(self, string):
-        self.check = 0
         if CreateWindow.counter < len(self.datalist):
             self.text, self.ok = QInputDialog.getText(self, 'Input Dialog', 'Enter ' + self.datalist[int(string)] + ':')
             if not self.ok:
                 exit()
-            if self.inputCheck(text=self.text, type=self.datalist[int(string)]) == True:
+            if self.strchkInst.inputCheck(text=self.text, type=self.datalist[int(string)], item = self.item) == True:
                 CreateWindow.counter += 1
             else:
                 QMessageBox.about(self, "Error", "Invalid Input!")
@@ -59,85 +59,10 @@ class CreateWindow(QWidget):
                 outfile.close()
             self.IPv4CalcInst.CallPrompt()
 
-
-    def ipChecker(self, ip):
-        iplist = ip.split(".")
-        for part in iplist:
-            if self.item == "decbin":
-                if int(part) > 255:
-                    return False
-            elif self.item == "bindec":
-                if int(part) > 11111111:
-                    return False
-
-    def textCheck(self, textlist):
-        textlist2 = []
-        for item in textlist:
-            textlist2.append(bin(int(item)).lstrip("0b"))
-        if self.item == "decbin":
-            print(self.text)
-            print(textlist)
-            if int(self.text) not in textlist:
-                self.check = 1
-        elif self.item == "bindec":
-            if (self.text) not in textlist2:
-                self.check = 1
-
-    def inputCheck(self, text, type):
-        if type in ["Source","Destination"]:
-            if text.count(".") == 3:
-                if self.ipChecker(text) == False:
-                    self.check = 1
-            else:
-                self.check = 1
-
-        elif type == "Version":
-            self.textCheck([4,6])
-
-        elif type == "IHL":
-            self.textCheck(list(range(1,5))) #fix?
-
-        elif type == "TOS":
-            self.textCheck(list(range(1,9)))
-
-        elif type == "Length":
-            self.textCheck(list(range(1,17)))
-
-        elif type == "Identification":
-            self.textCheck(list(range(1,17)))
-
-        elif type == "Flag":
-            self.textCheck(list(range(1,4)))
-
-        elif type == "Offset":
-            self.textCheck(list(range(1,14)))
-
-        elif type == "TTL":
-            self.textCheck(list(range(1,9)))
-
-        elif type == "Protocol":
-            self.textCheck(list(range(1,9)))
-
-        if text is "":
-            self.check = 1
-
-        for listitem in text:       #cant use textCheck because of full stop character
-            if self.item == "decbin":
-                if listitem not in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."]:
-                    self.check = 1
-            elif self.item == "bindec":
-                if listitem not in ["0","1","."]:
-                    self.check = 1
-
-        if self.check == 1:
-            return False
-        else:
-            return True
-
-
     def okButtonClick(self):
         if self.ok:
-            if self.check == 0:
+            print(self.strchkInst.check)
+            if self.strchkInst.check == 0:
                 self.IPv4Header.append(self.text)
                 print(self.IPv4Header)
                 try:
