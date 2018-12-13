@@ -56,29 +56,26 @@ class StringCheck:
         elif type == "Version":
             self.textCheck([4,6])
 
-        elif type == "IHL":                         #TODO: Calculate
-            self.textCheck(list(range(1,5)))
-
         elif type == "TOS":
-            self.textCheck(list(range(1,129)))
+            self.textCheck(list(range(1,256)))
 
         elif type == "Length":
-            self.textCheck(list(range(1,32769)))
+            self.textCheck(list(range(1,65536)))
 
         elif type == "Identification":
-            self.textCheck(list(range(1,32769)))
+            self.textCheck(list(range(1,65536)))
 
         elif type == "Flag":
-            self.textCheck(list(range(1,5)))
+            self.textCheck(list(range(1,8)))
 
         elif type == "Offset":
-            self.textCheck(list(range(1,4097)))
+            self.textCheck(list(range(1,8192)))
 
         elif type == "TTL":
-            self.textCheck(list(range(1,129)))
+            self.textCheck(list(range(1,256)))
 
         elif type == "Protocol":
-            self.textCheck(list(range(1,129)))
+            self.textCheck(list(range(1,256)))
 
         if self.check == 1:
             return False

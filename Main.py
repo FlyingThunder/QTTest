@@ -6,7 +6,7 @@ import os
 from calculating import IPv4Calc
 from chksum import chksum
 from StringCheck import StringCheck
-from calculate_IHL import getFields
+from calculate_IHL import calculate_IHL
 import string
 import datetime
 
@@ -24,7 +24,7 @@ class CreateWindow(QWidget):
     IPv4CalcInst = IPv4Calc()
     chksumInst = chksum()
     strchkInst = StringCheck()
-    IHLget = calculate_IHL()
+    calc_IHL = calculate_IHL()
 
 
     def __init__(self):
@@ -77,7 +77,7 @@ class CreateWindow(QWidget):
             self.showDialog(CreateWindow.counter)
 
     def get_IHL(self):
-        self.get_IHL().getFields(self.IPv4Header)
+        self.IHL = self.calc_IHL.getFields(self.item)
 
 
     def getTime(self):
@@ -98,6 +98,7 @@ class CreateWindow(QWidget):
             output.write("Your input:"+str(self.IPv4Header))
             for x in range(len(self.datalist)):
                 output.write("\n"+list(self.LogicData.keys())[x]+":"+list(self.LogicData.values())[x])
+            output.write("\nHeader Length:"+str(self.IHL))
             output.write("\nChecksum of the input:"+str(self.inputchecksum))
             output.write("\nChecksum of the output:"+str(self.outputchecksum))
             output.close()
